@@ -32,6 +32,7 @@ class Detector:
         self.im_width = 640   # Image width (pixels)
 
         # TODO: Determine camera parameters and construct camera matrix
+        #test message
         self.fovy = 0
         self.focal_length_y = 0
         self.focal_length_x = self.focal_length_y  # Assuming square pixels
