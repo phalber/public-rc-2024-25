@@ -32,18 +32,17 @@ class Detector:
         self.im_width = 640   # Image width (pixels)
 
         # TODO: Determine camera parameters and construct camera matrix
-        #test message
-        self.fovy = 0
-        self.focal_length_y = 0
+        self.fovy = 90 # according to the xml file
+        self.focal_length_y = self.im_height / (2 * np.tan(self.fovy * np.pi / 360)) # I took this formula from the second homework
         self.focal_length_x = self.focal_length_y  # Assuming square pixels
 
-        self.principal_point_x = 0
-        self.principal_point_y = 0
+        self.principal_point_x = self.im_width / 2
+        self.principal_point_y = self.im_height / 2
 
         self.camera_matrix = np.array([
-            [0, 0, 0],
-            [0, 0, 0],
-            [0, 0, 0]
+            [self.focal_length_x, 0, self.principal_point_x],
+            [0, self.focal_length_y, self.principal_point_y],
+            [0, 0, 1]
         ], dtype=float)
         # END TODO
 

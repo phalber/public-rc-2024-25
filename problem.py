@@ -5,7 +5,7 @@ import math
 import cv2
 
 from solution import Detector
-
+from mujoco import viewer
 
 def get_image(renderer, data):
     renderer.update_scene(data, camera="camera")
@@ -46,17 +46,20 @@ def task():
     renderer = mujoco.Renderer(model, height=480, width=640)
     data = mujoco.MjData(model)
     mujoco.mj_step(model, data)
+    viewer = mujoco.viewer.launch_passive(model, data)
+
     data.actuator("forward").ctrl = 1
     data.actuator("turn").ctrl = 1
     detector = Detector(model, data)
     for step in range(100):
+        viewer.sync()
         for i in range(10):
             mujoco.mj_step(model, data)
         img = get_image(renderer, data)
 
         file_name = None
         # Uncomment the following line to save the images
-        # file_name = f"img_{step}"
+        file_name = f"img_{step}"
         #
         # If you want to draw something on the images,
         # the easiest way is to do it inside the Detector class
