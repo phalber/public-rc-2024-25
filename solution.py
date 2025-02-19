@@ -55,8 +55,53 @@ class Detector:
         aruco_dict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_6X6_250)
 
         # TODO: Detect the cube and find its position
+
+        # Auxillary function that gives the id of corners in the cube coordinate frame - like in the second homework
+        # The cube seems to have the same dimensions etc. as in the homework if I briefly look at the xml files
+        def markers_corners(marker_size = 0.1, marker_center = (-0.3, -0.3, 0.05)):
+            x, y, z = marker_center
+            h = (marker_size - 0.02) / 2 # distance from the merker center to its side
+            h_full = marker_size / 2 # because the marker doesn't fill the entire side of the cube; h_full is 0.05, which is the distance from the cube center to its side
+            
+            # Assuming two markers are detected
+            corners = np.array([
+                [x + h_full, y + h, z + h],
+                [x + h_full, y + h, z - h],
+                [x + h_full, y - h, z - h],
+                [x + h_full, y - h, z + h]
+                #[x - h, y + h_full, z - h],
+                #[x + h, y + h_full, z - h],
+                #[x + h, y + h_full, z + h],
+                #[x - h, y + h_full, z + h]
+            ]
+            )
+            return corners
+
+
         detected = False
-        cube_center_world_frame = None
+        parameters = cv2.aruco.DetectorParameters()
+        detector = cv2.aruco.ArucoDetector(aruco_dict, parameters)
+
+        gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+        corners, ids, _ = detector.detectMarkers(gray)
+
+        # Observation: it seems like it always detects the marker with id 1
+        if ids is not None and len(ids) > 0:
+            print("Detected ids:", ids)
+            print("Corners: ", corners)
+            detected = True
+
+        corners = np.squeeze(corners)
+
+        
+        _, rvec, tvec = cv2.solvePnP(markers_corners(), corners, self.camera_matrix, self.dist_coeffs)
+
+
+        rotation_matrix, _ = cv2.Rodrigues(rvec)
+        camera_position = -np.matrix(rotation_matrix).T * tvec
+
+
+        cube_center_world_frame = -camera_position # we were detecting camera position with respect to the cube
         # END TODO
 
         self.test_detection(detected, cube_center_world_frame)
