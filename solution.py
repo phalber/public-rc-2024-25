@@ -57,13 +57,14 @@ class Detector:
         # TODO: Detect the cube and find its position
 
         # Auxillary function that gives the id of corners in the cube coordinate frame - like in the second homework
+        # We want it so that we can use SolvePnP
         # The cube seems to have the same dimensions etc. as in the homework if I briefly look at the xml files
         def markers_corners(marker_size = 0.1, marker_center = (-0.3, -0.3, 0.05)):
             x, y, z = marker_center
             h = (marker_size - 0.02) / 2 # distance from the merker center to its side
             h_full = marker_size / 2 # because the marker doesn't fill the entire side of the cube; h_full is 0.05, which is the distance from the cube center to its side
             
-            # Assuming two markers are detected
+            # Assuming one marker is detected
             corners = np.array([
                 [x + h_full, y + h, z + h],
                 [x + h_full, y + h, z - h],
